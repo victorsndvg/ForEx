@@ -12,7 +12,7 @@ implicit none
         integer                       :: Line = 0
     contains
     private
-        procedure, non_overridable         :: Create     => Exception_Create
+        procedure, non_overridable, public :: Create     => Exception_Create
         procedure, non_overridable, public :: SetContext => Exception_SetContext
         procedure, non_overridable, public :: GetCode    => Exception_GetCode
         procedure, non_overridable, public :: GetMessage => Exception_GetMessage
@@ -142,12 +142,12 @@ contains
         if (present(unit)) unitd = unit
         if (present(prefix)) prefd = prefix
         Write(ch,*) this%code
-        write(unit=unitd,fmt='(A,$)', iostat=iostatd, iomsg=iomsgd) prefd//' ('//trim(adjustl(ch))//'): '//this%message
+        write(unit=unitd,fmt='(A,$)', iostat=iostatd, iomsg=iomsgd) prefd//' '//trim(this%message)//' ('//trim(adjustl(ch))//') '
         if(allocated(this%File)) then
             Write(ch,*) this%line
-            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) '. File: '//trim(adjustl(this%file))//' (L'//trim(adjustl(ch))//')'
+            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) 'throwed in File: '//trim(this%file)//' (L'//trim(adjustl(ch))//')'
         else
-            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) '.'
+            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) ''
         endif
         if (present(iostat)) iostat = iostatd
         if (present(iomsg))  iomsg  = iomsgd

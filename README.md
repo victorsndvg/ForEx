@@ -1,7 +1,7 @@
 #ForEx
 **For**tran User Defined **Ex**ceptions Handler
 
-[![Build Status](https://travis-ci.org/victorsndvg/ForEx.svg)](https://travis-ci.org/victorsndvg/ForEx.svg)
+[![Build Status](https://travis-ci.org/victorsndvg/ForEx.svg?branch=master)](https://travis-ci.org/victorsndvg/ForEx.svg)
 [![codecov.io](https://codecov.io/github/victorsndvg/ForEx/coverage.svg?branch=master)](https://codecov.io/github/victorsndvg/ForEx?branch=master)
 
 ##License

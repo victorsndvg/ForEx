@@ -19,6 +19,7 @@ implicit none
         procedure,                  public :: Catch      => Exception_Catch
         procedure, non_overridable, public :: Free       => Exception_Free
         procedure, non_overridable, public :: Print      => Exception_Print
+        final                              ::               Exception_Finalize
     end type
 
     interface Exception
@@ -152,5 +153,16 @@ contains
         if (present(iostat)) iostat = iostatd
         if (present(iomsg))  iomsg  = iomsgd
     end subroutine Exception_Print
+
+
+    subroutine Exception_Finalize(this)
+    !-----------------------------------------------------------------
+    !< Finalize procedure
+    !-----------------------------------------------------------------
+        type(Exception), intent(INOUT):: this                         !< Exception
+    !-----------------------------------------------------------------
+        call this%Free()
+    end subroutine Exception_Finalize
+
 
 end module BaseException

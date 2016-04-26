@@ -97,7 +97,7 @@ contains
             THROW(ParentException())
         CATCH(ParentException, E)
             print*, '---> CATCH in level1'
-            call E%Print()
+            call E%Print(prefix='[ERROR]')
             THROW(E) ! Rethow
         ENDTRY
     end subroutine
@@ -107,7 +107,7 @@ contains
             call level3()
         CATCH(ChildException, E)
             print*, '---> CATCH in level2'
-            call E%Print()
+            call E%Print(prefix='[ERROR]')
         ENDTRY
     end subroutine
 
@@ -116,12 +116,11 @@ contains
         TRY
             nullify(a)
             allocate(a(100))
-!            THROW(Exception(Code=-999,Message='Generic exception!'))
             THROW(FatalException())
-            print*, a
+            print*, a ! Not printed. A exceptios was thowed before
         FINALLY
             print*, '---> FINALLY level 3'
-            if(associated(a)) deallocate(a)
+            if(associated(a)) deallocate(a) ! It is always performed
         ENDTRY
     end subroutine
 
@@ -144,10 +143,10 @@ implicit none
         call level1()
     CATCH(ChildException, E)
         print*, '---> CATCH in main: ChildException'
-        call E%Print()
+        call E%Print(prefix='[ERROR]')
     CATCH(ParentException, E)
         print*, '---> CATCH in main: ChildException'
-        call E%Print()
+        call E%Print(prefix='[ERROR]')
         print*, '-> End main TRY frame'
     ENDTRY
 

@@ -55,3 +55,27 @@ Preprocesor flags depending on the compiler vendor:
 - Intel Fortran: -fpp
 - IBM XLF: -qsuffix=f=f90:cpp=f90
 
+###Using ForEx in your program
+
+```fortran
+program test
+USE ForEx
+
+implicit none
+#include "ExceptionHandler.i90"
+
+TRY
+    ! Variable allocation
+    if(Error) then
+        THROW(Exception(Code=-1, Message='An error message')
+    endif
+CATCH(Exception, Ex)
+    call Ex%Print()
+FINALLY:
+    ! Variable deallocation
+ENDTRY
+
+end program test
+```
+
+

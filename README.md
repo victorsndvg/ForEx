@@ -26,14 +26,14 @@
 The easiest way to compile **ForEx** under Linux is:
 
 ```
-$ cd FPL
+$ cd ForEx
 $ mkdir build
 $ cd build
 $ cmake ../
 $ make
 ```
 
-*To compile FPL under Windows use de equivalent commands*
+*To compile ForEx under Windows use de equivalent commands*
 
 Remember, **ForEx** take advantage of the [C preprocessor](https://gcc.gnu.org/onlinedocs/cpp/). To include it in your project, you have to add the preprocessor flags while compiling.
 Preprocesor flags depending on the compiler vendor:

@@ -1,0 +1,60 @@
+! Local flow control - global exception knowledge
+! Throw performs local jumps to the end of the try frame or to finally
+! Manage any exception that was throwed previously
+! Single throw call in local TRY scope
+! Single throw call in local CATCH scope
+! Single throw call in local FINALLY scope
+! Allow Re-throw when catching
+! Only catch a single exception in a TRY frame
+
+#define TRY                                                                          \
+            call TheExceptionStack%OpenFrame();                                      \
+            do while(.true.);                                                        \
+                select type (P=>TheExceptionStack%Top());                            \
+                    class is (Exception);
+
+#define THROW(exception)                                                             \
+                        call TheExceptionStack%Push(exception, __FILE__, __LINE__);  \
+                        exit;
+
+#define CATCH(Exception, E)                                                          \
+                    class DEFAULT;                                                   \
+                        call TheExceptionStackIterator%Next();                       \
+                        cycle;                                                       \
+                end select;                                                          \
+                exit;                                                                \
+            enddo;                                                                   \
+            if(.not. TheExceptionStackIterator%hasCatched()) then;                   \
+                call TheExceptionStackIterator%Init(TheExceptionStack);              \
+            endif;                                                                   \
+            do while(.not. TheExceptionStackIterator%HasFinished() .and.             \
+                     .not. TheExceptionStackIterator%hasCatched());                  \
+                select type (E=>TheExceptionStackIterator%Get());                    \
+                    class is(Exception);                                             \
+                        call E%Catch();                                              \
+                        call TheExceptionStackIterator%Catch();
+
+#define FINALLY                                                                      \
+                    class DEFAULT;                                                   \
+                        call TheExceptionStackIterator%Next();                       \
+                        cycle;                                                       \
+                end select;                                                          \
+                exit;                                                                \
+            enddo;                                                                   \
+            do while(.true.);                                                        \
+                select type (P=>TheExceptionStack%Top());                            \
+                    class is (Exception);
+
+#define ENDTRY                                                                       \
+                    class DEFAULT;                                                   \
+                        call TheExceptionStackIterator%Next();                       \
+                        cycle;                                                       \
+                end select;                                                          \
+                exit;                                                                \
+            enddo;                                                                   \
+            if(TheExceptionStackIterator%hasCatched()) then;                         \
+                call TheExceptionStackIterator%Del();                                \
+            endif;                                                                   \
+            call TheExceptionStackIterator%Free();                                   \
+            call TheExceptionStack%CloseFrame()
+

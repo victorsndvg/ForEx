@@ -125,12 +125,12 @@ contains
     !< Fill the exception context info
     !-----------------------------------------------------------------
         class(ExceptionStackNode_t), intent(inout) :: this            !< Stack Node
-        class(Exception), target,    intent(in)    :: anException     !< Exception
+        class(Exception),            intent(in)    :: anException     !< Exception
         Character(Len=*),            intent(in)    :: File            !< File where the exception is launched
         integer,                     intent(in)    :: Line            !< Line where the exception is launched
     !-----------------------------------------------------------------
         if(associated(this%anException)) deallocate(this%anException)
-        this%anException => anException
+        allocate(this%anException, Source=anException)
         call this%anException%SetContext(File=file, Line=Line)
     end subroutine ExceptionStackNode_SetException
 

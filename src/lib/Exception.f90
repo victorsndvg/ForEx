@@ -36,7 +36,7 @@ contains
     !-----------------------------------------------------------------
         integer,          intent(in)    :: Code
         character(len=*), intent(in)    :: Message
-        class(Exception), pointer       :: anException
+        class(Exception), allocatable   :: anException
     !-----------------------------------------------------------------
         allocate(anException)
         call anException%Create(Code = Code, Message = Message)

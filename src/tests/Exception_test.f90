@@ -18,7 +18,7 @@ contains
     !-----------------------------------------------------------------
     !< Set the default code and message and return a CustomException
     !-----------------------------------------------------------------
-        class(Exception), pointer       :: aCustomException
+        class(Exception), allocatable :: aCustomException
     !-----------------------------------------------------------------
         allocate(CustomException::aCustomException)
         call aCustomException%Create(Code = -1, Message = 'My custom Exception!')
@@ -34,9 +34,11 @@ USE MyCustomException
 implicit none
 
 
-    class(Exception), pointer :: theException
+    class(Exception), allocatable :: theException
 
-    theException => Exception(Code=999, Message='This is a generic exception')
+    allocate(theException)
+
+    call theException%Create(Code=999, Message='This is a generic exception')
     call TheException%SetContext(File=__FILE__, Line=__LINE__)
     call TheException%Print(prefix='[Error]')
 
@@ -50,7 +52,9 @@ implicit none
     call theException%Free()
     deallocate(theException)
 
-    theException => CustomException()
+    allocate(CustomException::theException)
+
+    call theException%Create(Code=999, Message='This is a generic exception')
     call TheException%SetContext(File=__FILE__, Line=__LINE__)
     call TheException%Print(prefix='[Error]')
 

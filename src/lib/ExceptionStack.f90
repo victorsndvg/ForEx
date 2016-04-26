@@ -174,7 +174,7 @@ contains
     !< Add a new Node if key does not Exist
     !-----------------------------------------------------------------
         class(ExceptionStack_t),    intent(INOUT) :: this             !< Exception Stack
-        class(Exception),   target, intent(IN)    :: anException      !< Exception
+        class(Exception),           intent(IN)    :: anException      !< Exception
         character(len=*),           intent(IN)    :: file             !< File where the exception occurs
         integer,                    intent(in)    :: line             !< Line where the exception occurs
         class(ExceptionStackNode_t), pointer      :: NewStackNode     !< New Stack Node
@@ -242,7 +242,8 @@ contains
         if (present(prefix)) prefd = prefix
         call Iterator%Init(this)
         do while(.not. Iterator%HasFinished())
-                call Iterator%Print(unit=unitd, prefix=prefd//'[ExceptionsStack] ', iostat=iostatd, iomsg=iomsgd )
+                call Iterator%Catch()
+                call Iterator%Print(unit=unitd, prefix=prefd//'[BackTrace] ', iostat=iostatd, iomsg=iomsgd )
                 call Iterator%Next()
         enddo
         if (present(iostat)) iostat = iostatd
@@ -307,8 +308,13 @@ contains
     !<  Mark this try Frame as catched 
     !-----------------------------------------------------------------
         class(ExceptionStackIterator_t),  intent(INOUT) :: this       !< Exception Stack Iterator
+        class(Exception), pointer                       :: anException!< Exception
     !-----------------------------------------------------------------
-        if(associated(this%Stack)) this%Stack%hasCatched = .true.
+        if(.not. this%hasFinished()) then
+            this%Stack%hasCatched = .true.
+            anException => this%Current%GetException()
+            if(associated(anException)) call anException%Catch()
+        endif
     end subroutine ExceptionStackIterator_Catch
 
 

@@ -72,8 +72,8 @@ contains
     !-----------------------------------------------------------------
         class(FatalException), intent(in) :: this
     !-----------------------------------------------------------------
-        call this%Print()
-        call exit(this%GetCode())
+        print*, 'Customized catch action for FatalException'
+!        call exit(this%GetCode()) ! Stops program with an error code
     end subroutine
 end module MycustomExceptions
 

@@ -1,4 +1,5 @@
 #ForEx
+
 **For**tran User Defined **Ex**ceptions Handler
 
 [![Build Status](https://travis-ci.org/victorsndvg/ForEx.svg?branch=master)](https://travis-ci.org/victorsndvg/ForEx.svg)
@@ -12,6 +13,19 @@
 
 **ForEx** is fortran 2003 project taking advance of the [C preprocessor](https://gcc.gnu.org/onlinedocs/cpp/) capabilities in order to emulate exception handling.
 
+##Features
+
+- **Exception hierarchy:** **ForEx** can handle any error object extended from the **Exception** base class. 
+- **Local flow control:** throwing an exception changes the local flow. **THROW** performs local jumps to the end of the **TRY** frame or **FINALLY**.
+- **Global handling:** the exception stack is a global object under the singleton pattern.
+- **Single THROW call per scope:**
+   - Single throw call per local **TRY** scope.
+   - Single throw call per local **CATCH** scope.
+   - Single throw call per local **FINALLY** scope.
+- **Re-throwing:** a exception can be raised again in the **CATCH** scope.
+- **Handle any previously throwed exception:** **CATCH** iterate over all the exceptions looking for the first that matches the same *class*. It only handle a single exception per **TRY** frame.
+- **Customizable catching action:** Exception *class* contains the **Catch** procedure to customize the action performed when cathing it.
+- **Automatic Backtrace of non handled exceptions:** going out of the main **TRY**/**ENDTRY** scope with non handled exceptions in the stack causes *exception backtrace flush*.
 
 ##How to get ForEx
 

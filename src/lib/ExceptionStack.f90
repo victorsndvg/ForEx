@@ -7,6 +7,7 @@ USE BaseException
 
 implicit none
 private
+save
 
     type :: ExceptionStackIterator_t
     private

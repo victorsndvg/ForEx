@@ -9,5 +9,6 @@ implicit none
 
     call StackNode%SetException(anException=Exception(Code=999, Message='This is a generic exception'), File=__FILE__, Line=__LINE__)
     call StackNode%Print()
+    call StackNode%Free()
 
 end program ExceptionStackNode_test

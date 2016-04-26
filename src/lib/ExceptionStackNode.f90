@@ -25,7 +25,7 @@ private
         procedure, non_overridable, public :: SetException     => ExceptionStackNode_SetException
         procedure, non_overridable, public :: GetException     => ExceptionStackNode_GetException
         procedure, non_overridable, public :: Free             => ExceptionStackNode_Free
-        final                              ::                     Exception_Finalize
+        final                              ::                     ExceptionStackNode_Finalize
     end type ExceptionStackNode_t
 
 public :: ExceptionStackNode_t
@@ -125,7 +125,7 @@ contains
     !< Fill the exception context info
     !-----------------------------------------------------------------
         class(ExceptionStackNode_t), intent(inout) :: this            !< Stack Node
-        class(Exception), pointer,   intent(in)    :: anException     !< Exception
+        class(Exception), target,    intent(in)    :: anException     !< Exception
         Character(Len=*),            intent(in)    :: File            !< File where the exception is launched
         integer,                     intent(in)    :: Line            !< Line where the exception is launched
     !-----------------------------------------------------------------
@@ -187,7 +187,7 @@ contains
     !-----------------------------------------------------------------
     !< Finalize procedure
     !-----------------------------------------------------------------
-        type(Exception), intent(INOUT):: this                         !< Exception Stack Node
+        type(ExceptionStackNode_t),      intent(INOUT)  :: this      !< Exception Stack Node
     !-----------------------------------------------------------------
         call this%Free()
     end subroutine ExceptionStackNode_Finalize

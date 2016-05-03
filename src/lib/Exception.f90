@@ -143,10 +143,12 @@ contains
         if (present(unit)) unitd = unit
         if (present(prefix)) prefd = prefix
         Write(ch,*) this%code
-        write(unit=unitd,fmt='(A,$)', iostat=iostatd, iomsg=iomsgd) prefd//' '//trim(this%message)//' ('//trim(adjustl(ch))//') '
+        write(unit=unitd,fmt='(A,$)', iostat=iostatd, iomsg=iomsgd) &
+                prefd//' '//trim(this%message)//' ('//trim(adjustl(ch))//') '
         if(allocated(this%File)) then
             Write(ch,*) this%line
-            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) 'throwed in File: '//trim(this%file)//' (L'//trim(adjustl(ch))//')'
+            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) &
+                    'throwed in File: '//trim(this%file)//' (L'//trim(adjustl(ch))//')'
         else
             Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) ''
         endif

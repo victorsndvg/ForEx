@@ -71,7 +71,7 @@ TRY
     endif
 CATCH(Exception, Ex)
     call Ex%Print()
-FINALLY:
+FINALLY
     ! Variable deallocation
 ENDTRY
 

@@ -145,7 +145,7 @@ implicit none
         print*, '---> CATCH in main: ChildException'
         call E%Print(prefix='[ERROR]')
     CATCH(ParentException, E)
-        print*, '---> CATCH in main: ChildException'
+        print*, '---> CATCH in main: ParentException'
         call E%Print(prefix='[ERROR]')
         print*, '-> End main TRY frame'
     ENDTRY

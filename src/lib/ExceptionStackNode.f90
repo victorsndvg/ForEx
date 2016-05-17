@@ -8,7 +8,7 @@ private
 
     type :: ExceptionStackNode_t
     private
-        class(Exception),            pointer :: anException
+        class(Exception), allocatable        :: anException
         class(ExceptionStackNode_t), pointer :: Previous => null()
         class(ExceptionStackNode_t), pointer :: Next => null()
     contains
@@ -129,9 +129,13 @@ contains
         Character(Len=*),            intent(in)    :: File            !< File where the exception is launched
         integer,                     intent(in)    :: Line            !< Line where the exception is launched
     !-----------------------------------------------------------------
-        if(associated(this%anException)) deallocate(this%anException)
-        allocate(this%anException, Source=anException)
-        call this%anException%SetContext(File=file, Line=Line)
+        if(allocated(this%anException)) then
+            call this%anException%Free()
+            deallocate(this%anException)
+        endif
+        allocate(this%anException, Mold=anException)
+        call this%anException%Clone(Source=anException)
+        call this%anException%AddContext(File=file, Line=Line)
     end subroutine ExceptionStackNode_SetException
 
 
@@ -152,7 +156,7 @@ contains
     !-----------------------------------------------------------------
         class(ExceptionStackNode_t), intent(INOUT) :: this            !< Stack Node
     !-----------------------------------------------------------------
-        if(associated(this%anException)) then
+        if(allocated(this%anException)) then
             call this%anException%free()
             deallocate(this%anException)
         endif
@@ -177,7 +181,7 @@ contains
         iostatd = 0 ; iomsgd = ''; prefd = ''; unitd = error_unit
         if (present(unit)) unitd = unit
         if (present(prefix)) prefd = prefix
-        if(associated(this%anException)) call this%anException%Print(unitd, prefix=prefd, iostat=iostatd, iomsg=iomsgd)
+        if (allocated(this%anException)) call this%anException%Print(unitd, prefix=prefd, iostat=iostatd, iomsg=iomsgd)
         if (present(iostat)) iostat = iostatd
         if (present(iomsg))  iomsg  = iomsgd
     end subroutine ExceptionStackNode_Print

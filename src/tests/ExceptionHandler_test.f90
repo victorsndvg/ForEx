@@ -117,7 +117,7 @@ contains
             nullify(a)
             allocate(a(100))
             THROW(FatalException())
-            print*, a ! Not printed. A exceptios was thowed before
+            print*, a ! Not printed. A exception was thowed before
         FINALLY
             print*, '---> FINALLY level 3'
             if(associated(a)) deallocate(a) ! It is always performed

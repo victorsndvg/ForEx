@@ -23,6 +23,7 @@
    - Single throw call per local **CATCH** scope.
    - Single throw call per local **FINALLY** scope.
 - **Re-throwing:** a exception can be raised again in the **CATCH** scope.
+- **Re-throwing Backtrace:** an exception saves the stack of contexts where it has been throwed.
 - **Handle any previously throwed exception:** **CATCH** iterate over all the exceptions looking for the first that matches the same *class*. It only handle a single exception per **TRY** frame.
 - **Customizable catching action:** Exception *class* contains the **Catch** procedure to customize the action performed when cathing it.
 - **Automatic Backtrace of non handled exceptions:** going out of the main **TRY**/**ENDTRY** scope with non handled exceptions in the stack causes *exception backtrace flush*.

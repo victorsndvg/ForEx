@@ -8,9 +8,12 @@
 ! Only catch a single exception in a TRY frame
 
 #define TRY                                                                          \
+        BLOCK ; \
+            class(Exception), allocatable :: NullException;                          \
+            allocate(NullException);                                                 \
             call TheExceptionStack%OpenFrame();                                      \
             do while(.true.);                                                        \
-                select type (P=>TheExceptionStack%Top());                            \
+                select type (P=>NullException);                                      \
                     class is (Exception);
 
 #define THROW(exception)                                                             \
@@ -56,5 +59,7 @@
                 call TheExceptionStackIterator%Del();                                \
             endif;                                                                   \
             call TheExceptionStackIterator%Free();                                   \
-            call TheExceptionStack%CloseFrame()
+            call TheExceptionStack%CloseFrame();                                     \
+            deallocate(NullException);                                               \
+        ENDBLOCK;
 

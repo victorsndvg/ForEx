@@ -2,6 +2,8 @@
 
 **For**tran User Defined **Ex**ceptions Handler
 
+**Experimental Code:** *Use it carefully! still under development*
+
 [![Build Status](https://travis-ci.org/victorsndvg/ForEx.svg?branch=master)](https://travis-ci.org/victorsndvg/ForEx.svg)
 [![codecov.io](https://codecov.io/github/victorsndvg/ForEx/coverage.svg?branch=master)](https://codecov.io/github/victorsndvg/ForEx?branch=master)
 
@@ -24,7 +26,9 @@
    - Single throw call per local **FINALLY** scope.
 - **Re-throwing:** a exception can be raised again in the **CATCH** scope.
 - **Re-throwing Backtrace:** an exception saves the stack of contexts where it has been throwed.
-- **Handle any previously throwed exception:** **CATCH** iterate over all the exceptions looking for the first that matches the same *class*. It only handle a single exception per **TRY** frame.
+- **Handle throwed exceptions:** **CATCH** iterate over all the exceptions looking for the first that matches the same *class*.
+- **CATCH precedence:** multiple **CATCH** calls in the same **TRY** frame are executed sequencially.
+- **Automatic exception stack cleaning when CATCH:** if several exceptions has been thrown along the program, only one of them will be handled in the next **CATCH** call.
 - **Customizable catching action:** Exception *class* contains the **Catch** procedure to customize the action performed when cathing it.
 - **Automatic Backtrace of non handled exceptions:** going out of the main **TRY**/**ENDTRY** scope with non handled exceptions in the stack causes *exception backtrace flush*.
 

@@ -72,8 +72,8 @@ contains
     !-----------------------------------------------------------------
         class(FatalException), intent(in) :: this
     !-----------------------------------------------------------------
-        print*, 'Customized catch action for FatalException'
-!        call exit(this%GetCode()) ! Stops program with an error code
+        call this%Print()
+        call exit(this%GetCode()) ! Stops program with an error code
     end subroutine
 end module MycustomExceptions
 
@@ -92,36 +92,46 @@ contains
 
 
     subroutine level1()
+        print*, '-> Enter level1'
         TRY
             call level2()
             THROW(ParentException())
+        CATCH(ChildException, E)
+            call E%Print(prefix='[ERROR in LEVEL3]')
+            THROW(E) ! Rethow
         CATCH(ParentException, E)
-            print*, '---> CATCH in level1'
-            call E%Print(prefix='[ERROR]')
+            call E%Print(prefix='[ERROR in LEVEL3]')
+            THROW(E) ! Rethow
+        CATCH(FatalException, E)
+            call E%Print(prefix='[ERROR in LEVEL3]')
             THROW(E) ! Rethow
         ENDTRY
+        print*, '-> Exit level1'
     end subroutine
 
     subroutine level2()
+        print*, '--> Enter level2'
         TRY
             call level3()
         CATCH(ChildException, E)
-            print*, '---> CATCH in level2'
-            call E%Print(prefix='[ERROR]')
+            call E%Print(prefix='[ERROR in LEVEL2]')
         ENDTRY
+        print*, '--> Exit level2'
     end subroutine
 
     subroutine level3()
         integer, pointer :: a(:)
+        print*, '---> Enter level3'
         TRY
             nullify(a)
             allocate(a(100))
             THROW(FatalException())
-            print*, a ! Not printed. A exceptios was thowed before
+            print*, a ! Not printed. A exception was thowed before
         FINALLY
             print*, '---> FINALLY level 3'
             if(associated(a)) deallocate(a) ! It is always performed
         ENDTRY
+        print*, '---> Exit level3'
     end subroutine
 
 end module SomeProcedures
@@ -138,17 +148,17 @@ implicit none
 
 #include "ExceptionHandler.i90"
 
+    print*, '> Begin Program'
+
     TRY
-        print*, '-> Begin main TRY frame'
         call level1()
     CATCH(ChildException, E)
-        print*, '---> CATCH in main: ChildException'
-        call E%Print(prefix='[ERROR]')
+        call E%Print(prefix='[ERROR in MAIN]')
     CATCH(ParentException, E)
-        print*, '---> CATCH in main: ParentException'
-        call E%Print(prefix='[ERROR]')
-        print*, '-> End main TRY frame'
+        call E%Print(prefix='[ERROR in MAIN]')
+        THROW(E) ! Rethow
     ENDTRY
+    print*, '> End Program'
 
 contains
 

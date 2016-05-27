@@ -7,54 +7,64 @@
 ! Allow Re-throw when catching
 ! Only catch a single exception in a TRY frame
 
-#define TRY                                                                          \
-            call TheExceptionStack%OpenFrame();                                      \
-            do while(.true.);                                                        \
-                select type (P=>TheExceptionStack%Top());                            \
-                    class is (Exception);
+#define TRY                                                                            \
+        BLOCK ;                                                                        \
+            class(Exception), allocatable :: NullException;                            \
+            allocate(NullException);                                                   \
+            call TheExceptionStack%OpenFrame();                                        \
+            do while(.true.);                                                          \
+                select type (TheException=>NullException);                             \
+                    class is (Exception);                                              \
+                        associate(E=>TheException);
 
-#define THROW(exception)                                                             \
-                        call TheExceptionStack%Push(exception, __FILE__, __LINE__);  \
-                        exit;
+#define THROW(exception)                                                               \
+                        if(.true.) then;                                               \
+                            call TheExceptionStack%Push(exception, __FILE__, __LINE__);\
+                            exit;                                                      \
+                        endif;
 
-#define CATCH(Exception, E)                                                          \
-                    class DEFAULT;                                                   \
-                        call TheExceptionStackIterator%Next();                       \
-                        cycle;                                                       \
-                end select;                                                          \
-                exit;                                                                \
-            enddo;                                                                   \
-            if(.not. TheExceptionStackIterator%hasCatched()) then;                   \
-                call TheExceptionStackIterator%Init(TheExceptionStack);              \
-            endif;                                                                   \
-            do while(.not. TheExceptionStackIterator%HasFinished() .and.             \
-                     .not. TheExceptionStackIterator%hasCatched());                  \
-                select type (E=>TheExceptionStackIterator%Get());                    \
-                    class is(Exception);                                             \
-                        call E%Catch();                                              \
-                        call TheExceptionStackIterator%Catch();
+#define CATCH(Exception, Ex)                                                            \
+                        end associate;                                                 \
+                    class DEFAULT;                                                     \
+                        call TheExceptionStackIterator%Next();                         \
+                        cycle;                                                         \
+                end select;                                                            \
+                exit;                                                                  \
+            enddo;                                                                     \
+            call TheExceptionStackIterator%Init(TheExceptionStack);                    \
+            do while(.not. TheExceptionStackIterator%HasFinished());                   \
+                select type (TheException=>TheExceptionStackIterator%Get());           \
+                    class is(Exception);                                               \
+                        call TheException%Catch();                                     \
+                        if(allocated(NullException)) deallocate(NullException);        \
+                        allocate(NullException, Mold=TheException);                    \
+                        call NullException%Clone(TheException);                        \
+                        call TheExceptionStack%Clean();                                \
+                        call TheExceptionStackIterator%Free();                         \
+                        associate(E=>NullException);
 
-#define FINALLY                                                                      \
-                    class DEFAULT;                                                   \
-                        call TheExceptionStackIterator%Next();                       \
-                        cycle;                                                       \
-                end select;                                                          \
-                exit;                                                                \
-            enddo;                                                                   \
-            do while(.true.);                                                        \
-                select type (P=>TheExceptionStack%Top());                            \
-                    class is (Exception);
+#define FINALLY                                                                        \
+                        end associate;                                                 \
+                    class DEFAULT;                                                     \
+                        call TheExceptionStackIterator%Next();                         \
+                        cycle;                                                         \
+                end select;                                                            \
+                exit;                                                                  \
+            enddo;                                                                     \
+            do while(.true.);                                                          \
+                select type (TheException=>NullException);                             \
+                    class is (Exception);                                              \
+                        associate(E=>TheException);
 
-#define ENDTRY                                                                       \
-                    class DEFAULT;                                                   \
-                        call TheExceptionStackIterator%Next();                       \
-                        cycle;                                                       \
-                end select;                                                          \
-                exit;                                                                \
-            enddo;                                                                   \
-            if(TheExceptionStackIterator%hasCatched()) then;                         \
-                call TheExceptionStackIterator%Del();                                \
-            endif;                                                                   \
-            call TheExceptionStackIterator%Free();                                   \
-            call TheExceptionStack%CloseFrame()
+#define ENDTRY                                                                         \
+                        end associate;                                                 \
+                    class DEFAULT;                                                     \
+                        call TheExceptionStackIterator%Next();                         \
+                        cycle;                                                         \
+                end select;                                                            \
+                exit;                                                                  \
+            enddo;                                                                     \
+            call TheExceptionStack%CloseFrame();                                       \
+            deallocate(NullException);                                                 \
+        ENDBLOCK;
 

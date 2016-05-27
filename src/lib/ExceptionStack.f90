@@ -244,7 +244,7 @@ contains
         call Iterator%Init(this)
         do while(.not. Iterator%HasFinished())
                 call Iterator%Catch()
-                call Iterator%Print(unit=unitd, prefix=prefd//'[BackTrace] ', iostat=iostatd, iomsg=iomsgd )
+                call Iterator%Print(unit=unitd, prefix=prefd//'[ERROR] ', iostat=iostatd, iomsg=iomsgd )
                 call Iterator%Next()
         enddo
         if (present(iostat)) iostat = iostatd

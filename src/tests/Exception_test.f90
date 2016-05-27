@@ -36,10 +36,11 @@ implicit none
 
     class(Exception), allocatable :: theException
 
-    allocate(theException)
+    allocate(Exception::theException)
 
-    call theException%Create(Code=999, Message='This is a generic exception')
-    call TheException%SetContext(File=__FILE__, Line=__LINE__)
+    call TheException%Create(Code=999, Message='This is a generic exception')
+    call TheException%AddContext(File=__FILE__, Line=__LINE__)
+    call TheException%AddContext(File=__FILE__, Line=__LINE__)
     call TheException%Print(prefix='[Error]')
 
     select type(TheException)
@@ -55,7 +56,7 @@ implicit none
     allocate(CustomException::theException)
 
     call theException%Create(Code=999, Message='This is a generic exception')
-    call TheException%SetContext(File=__FILE__, Line=__LINE__)
+    call TheException%AddContext(File=__FILE__, Line=__LINE__)
     call TheException%Print(prefix='[Error]')
 
     select type(TheException)

@@ -5,27 +5,40 @@ USE ExceptionStack
 
 implicit none
 
+BLOCK
+    class(Exception), allocatable :: NullException
+    allocate(NullException)
     print*, '1.- Open try frame'
     call TheExceptionStack%OpenFrame()
     do while(.true.)
-        select type (P=>Exception(Code=999, Message='This is a generic exception'));
+        select type (TheException=>Exception(Code=999, Message='This is a generic exception'));
             class is (Exception);
-                print*, '2.- Exception throwed'
-                call TheExceptionStack%Push(P, __FILE__, __LINE__)
-                exit;
+!                associate(E=>TheException)
+                    if(.true.) then
+                        print*, '2.- Exception throwed'
+                        call TheExceptionStack%Push(TheException, __FILE__, __LINE__)
+                        exit;
+                    endif
+!                end associate
             class DEFAULT
                 call TheExceptionStackIterator%Next()
                 cycle
         end select
         exit
     enddo
-    if(.not. TheExceptionStackIterator%hasCatched()) call TheExceptionStackIterator%Init(TheExceptionStack)
-    do while(.not. TheExceptionStackIterator%HasFinished() .and. .not. TheExceptionStackIterator%hasCatched())
-        select type (E=>TheExceptionStackIterator%Get())
+    call TheExceptionStackIterator%Init(TheExceptionStack)
+    do while(.not. TheExceptionStackIterator%HasFinished())
+        select type (TheException=>TheExceptionStackIterator%Get())
             class is(Exception)
                 print*, '3.- Exception catched'
-                call E%Catch()
-                call TheExceptionStackIterator%Catch()
+                call TheException%Catch()
+                if(allocated(NullException)) deallocate(NullException)
+                allocate(NullException, Mold=TheException)
+                call NullException%Clone(TheException)
+                call TheExceptionStack%Clean()
+                call TheExceptionStackIterator%Free()
+                associate(E=>NullException)
+                end associate
             class DEFAULT
                 call TheExceptionStackIterator%Next()
                 cycle
@@ -33,7 +46,7 @@ implicit none
         exit
     enddo
     do while(.true.)
-        select type (P=>TheExceptionStack%Top())
+        select type (TheException=>NullException)
             class is (Exception)
                 print*, '4.- Finally'
             class DEFAULT
@@ -42,10 +55,9 @@ implicit none
         end select
         exit
     enddo
-    if(TheExceptionStackIterator%hasCatched()) call TheExceptionStackIterator%Del()
-    call TheExceptionStackIterator%Free()
     call TheExceptionStack%CloseFrame()
     print*, '5.- Close try frame'
+ENDBLOCK
 
 
 end program ExceptionStackNode_test

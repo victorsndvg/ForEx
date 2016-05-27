@@ -1,6 +1,7 @@
 module BaseException
 
 USE iso_fortran_env, only : error_unit
+USE ExceptionContextStack
 
 implicit none
 
@@ -8,15 +9,15 @@ implicit none
     private
         integer                       :: Code = 0
         character(len=:), allocatable :: Message
-        character(len=:), allocatable :: File
-        integer                       :: Line = 0
+        type(ExceptionContextStack_t) :: ContextStack
     contains
     private
         procedure, non_overridable, public :: Create     => Exception_Create
-        procedure, non_overridable, public :: SetContext => Exception_SetContext
+        procedure, non_overridable, public :: AddContext => Exception_AddContext
         procedure, non_overridable, public :: GetCode    => Exception_GetCode
         procedure, non_overridable, public :: GetMessage => Exception_GetMessage
         procedure,                  public :: Catch      => Exception_Catch
+        procedure, non_overridable, public :: Clone      => Exception_Clone
         procedure, non_overridable, public :: Free       => Exception_Free
         procedure, non_overridable, public :: Print      => Exception_Print
         final                              ::               Exception_Finalize
@@ -56,7 +57,7 @@ contains
     end subroutine Exception_Create
 
 
-    subroutine Exception_SetContext(this, File, Line)
+    subroutine Exception_AddContext(this, File, Line)
     !-----------------------------------------------------------------
     !< Assign a context (file and line) to the exception
     !-----------------------------------------------------------------
@@ -64,9 +65,8 @@ contains
         character(len=*), intent(in)    :: File
         integer,          intent(in)    :: Line
     !-----------------------------------------------------------------
-        this%File = File
-        this%Line = Line
-    end subroutine Exception_SetContext
+        call this%ContextStack%Push(File, Line)
+    end subroutine Exception_AddContext
 
 
     function Exception_GetCode(this) result(Code)
@@ -111,6 +111,19 @@ contains
     end subroutine Exception_Catch
 
 
+    subroutine Exception_Clone(this, Source)
+    !-----------------------------------------------------------------
+    !< Free exception derived type
+    !-----------------------------------------------------------------
+        class(Exception), intent(inout) :: this
+        class(Exception), intent(in)    :: Source
+    !-----------------------------------------------------------------
+        this%Code = Source%Code
+        if(allocated(Source%message)) this%message = Source%Message
+        call this%ContextStack%Clone(Source=Source%ContextStack)
+    end subroutine Exception_Clone
+
+
     subroutine Exception_Free(this)
     !-----------------------------------------------------------------
     !< Free exception derived type
@@ -118,9 +131,7 @@ contains
         class(Exception), intent(inout) :: this
     !-----------------------------------------------------------------
         this%code = 0
-        this%line = 0
         if(allocated(this%message)) deallocate(this%message)
-        if(allocated(this%file))    deallocate(this%file)
     end subroutine Exception_Free
 
 
@@ -143,15 +154,13 @@ contains
         if (present(unit)) unitd = unit
         if (present(prefix)) prefd = prefix
         Write(ch,*) this%code
-        write(unit=unitd,fmt='(A,$)', iostat=iostatd, iomsg=iomsgd) &
+        if(allocated(this%message)) then
+            write(unit=unitd,fmt='(A)', iostat=iostatd, iomsg=iomsgd) &
                 prefd//' '//trim(this%message)//' ('//trim(adjustl(ch))//') '
-        if(allocated(this%File)) then
-            Write(ch,*) this%line
-            Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) &
-                    'throwed in File: '//trim(this%file)//' (L'//trim(adjustl(ch))//')'
         else
             Write(unit=unitd,fmt=*, iostat=iostatd, iomsg=iomsgd) ''
         endif
+        call this%ContextStack%Print(unitd, ' ('//trim(adjustl(ch))//') '//'[Backtrace]', iostatd, iomsgd)
         if (present(iostat)) iostat = iostatd
         if (present(iomsg))  iomsg  = iomsgd
     end subroutine Exception_Print

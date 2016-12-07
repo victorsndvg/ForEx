@@ -97,13 +97,13 @@ contains
             call level2()
             THROW(ParentException())
         CATCH(ChildException, E)
-            call E%Print(prefix='[ERROR in LEVEL3]')
+            call E%Print(prefix='[ERROR in LEVEL1]')
             THROW(E) ! Rethow
         CATCH(ParentException, E)
-            call E%Print(prefix='[ERROR in LEVEL3]')
+            call E%Print(prefix='[ERROR in LEVEL1]')
             THROW(E) ! Rethow
         CATCH(FatalException, E)
-            call E%Print(prefix='[ERROR in LEVEL3]')
+            call E%Print(prefix='[ERROR in LEVEL1]')
             THROW(E) ! Rethow
         ENDTRY
         print*, '-> Exit level1'

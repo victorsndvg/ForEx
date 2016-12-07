@@ -24,13 +24,14 @@ before_install:
 
 install:
   - export FC=/usr/bin/gfortran-5
+  - export GCOV=$(which gcov-5)
   - $FC --version
   - cmake --version
 
 before_script:
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCOVERAGE_COMMAND=$GCOV ..
 
 script:
   - ctest -VV -T Start -T Build -T Test -T Coverage
@@ -38,7 +39,7 @@ script:
 after_success:
   - find . -name '*.gcno' -print
   - gcov-5 --version
-  - bash <(curl -s https://codecov.io/bash) -x $(which gcov-5)
+  - bash <(curl -s https://codecov.io/bash) -x GCOV
 
 after_script:
   - cd ..

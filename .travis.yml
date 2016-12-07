@@ -34,12 +34,12 @@ before_script:
   - cmake -DCOVERAGE_COMMAND=$GCOV ..
 
 script:
-  - ctest -VV -T Start -T Build -T Test -T Coverage
+  - ctest -VV -T Start -T Build -T Test # -T Coverage
 
 after_success:
   - find . -name '*.gcno' -print
   - gcov-5 --version
-  - bash <(curl -s https://codecov.io/bash) -x GCOV
+  - # bash <(curl -s https://codecov.io/bash) -x GCOV
 
 after_script:
   - cd ..

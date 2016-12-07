@@ -15,7 +15,7 @@
             do while(.true.);                                                          \
                 select type (TheException=>NullException);                             \
                     class is (Exception);                                              \
-                        associate(E=>TheException);
+                        associate(TheException=>TheException);
 
 #define THROW(exception)                                                               \
                         if(.true.) then;                                               \
@@ -41,7 +41,7 @@
                         call NullException%Clone(TheException);                        \
                         call TheExceptionStack%Clean();                                \
                         call TheExceptionStackIterator%Free();                         \
-                        associate(E=>NullException);
+                        associate(Ex=>NullException);
 
 #define FINALLY                                                                        \
                         end associate;                                                 \
@@ -54,7 +54,7 @@
             do while(.true.);                                                          \
                 select type (TheException=>NullException);                             \
                     class is (Exception);                                              \
-                        associate(E=>TheException);
+                        associate(Ex=>TheException);
 
 #define ENDTRY                                                                         \
                         end associate;                                                 \

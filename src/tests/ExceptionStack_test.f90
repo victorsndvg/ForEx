@@ -13,13 +13,13 @@ BLOCK
     do while(.true.)
         select type (TheException=>Exception(Code=999, Message='This is a generic exception'));
             class is (Exception);
-!                associate(E=>TheException)
+                associate(TheException=>TheException)
                     if(.true.) then
                         print*, '2.- Exception throwed'
                         call TheExceptionStack%Push(TheException, __FILE__, __LINE__)
                         exit;
                     endif
-!                end associate
+                end associate
             class DEFAULT
                 call TheExceptionStackIterator%Next()
                 cycle
@@ -37,7 +37,7 @@ BLOCK
                 call NullException%Clone(TheException)
                 call TheExceptionStack%Clean()
                 call TheExceptionStackIterator%Free()
-                associate(E=>NullException)
+                associate(Ex=>NullException)
                 end associate
             class DEFAULT
                 call TheExceptionStackIterator%Next()

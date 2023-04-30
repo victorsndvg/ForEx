@@ -1,4 +1,4 @@
-#ForEx
+# ForEx
 
 **For**tran User Defined **Ex**ceptions Handler
 
@@ -7,15 +7,15 @@
 [![Build Status](https://travis-ci.org/victorsndvg/ForEx.svg?branch=master)](https://travis-ci.org/victorsndvg/ForEx.svg)
 [![codecov.io](https://codecov.io/github/victorsndvg/ForEx/coverage.svg?branch=master)](https://codecov.io/github/victorsndvg/ForEx?branch=master)
 
-##License
+## License
 
 [![License](https://img.shields.io/badge/license-GNU%20LESSER%20GENERAL%20PUBLIC%20LICENSE%20v3%2C%20LGPLv3-red.svg)](http://www.gnu.org/licenses/lgpl-3.0.txt)
 
-##What is ForEx?
+## What is ForEx?
 
 **ForEx** is fortran 2003 project taking advance of the [C preprocessor](https://gcc.gnu.org/onlinedocs/cpp/) capabilities in order to emulate exception handling.
 
-##Features
+## Features
 
 - **Exception hierarchy:** **ForEx** can handle any error object extended from the **Exception** base class. 
 - **Local flow control:** throwing an exception changes the local flow. **THROW** performs local jumps to the end of the **TRY** frame or **FINALLY**.
@@ -60,7 +60,7 @@ Preprocesor flags depending on the compiler vendor:
 - Intel Fortran: -fpp
 - IBM XLF: -qsuffix=f=f90:cpp=f90
 
-###Using ForEx in your program
+### Using ForEx in your program
 
 ```fortran
 program test
